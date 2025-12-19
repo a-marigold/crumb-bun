@@ -1,3 +1,11 @@
+export type HttpMethod =
+    | 'GET'
+    | 'POST'
+    | 'PUT'
+    | 'PATCH1'
+    | 'DELETE'
+    | 'OPTIONS';
+
 export type Header = {
     name: string;
     value: string;
@@ -21,6 +29,9 @@ export interface RouteResponse<
 }
 
 export type Route = {
+    url: string;
+    method: HttpMethod;
+
     onRequest?: (request: RouteRequest, response: RouteResponse) => void;
 
     preHandler?: (request: RouteRequest, response: RouteResponse) => void;

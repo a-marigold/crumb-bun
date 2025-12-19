@@ -7,9 +7,9 @@ import type {
     Headers,
 } from './types/route';
 
-export const routes = new Map<RouteRequest['url'], Route>();
+export const _routes = new Map<Route['url'], Route>();
 
-export const listen = (port: number, hostname?: string): void => {
+export const listen = (port?: number, hostname?: string): void => {
     serve({
         port,
 
@@ -20,7 +20,7 @@ export const listen = (port: number, hostname?: string): void => {
             let headers: Headers = {};
             let status: number = 200;
 
-            const currentRoute = routes.get(request.url);
+            const currentRoute = _routes.get(request.url);
 
             if (!currentRoute) {
                 return new Response(undefined, {
