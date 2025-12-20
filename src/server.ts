@@ -1,6 +1,7 @@
 // TODO: add docs
 
 import { serve } from 'bun';
+import type { BunRequest } from 'bun';
 
 import type {
     Route,
@@ -11,8 +12,7 @@ import type {
     HttpMethod,
 } from './types/route';
 
-type WrappedRouteCallback = (request: Request) => Response;
-
+type WrappedRouteCallback = (request: BunRequest) => Response;
 type PreparedRoute = Partial<Record<HttpMethod, WrappedRouteCallback>>;
 
 type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
@@ -23,7 +23,7 @@ const wrapRouteCallback = (
     routeOptions: RouteOptions
 ): WrappedRouteCallback => {
     return (request) => {
-        let status: number = 200;
+        let status: number | undefined = undefined;
         let statusText: string | undefined = undefined;
 
         let body: unknown = null;
@@ -39,8 +39,8 @@ const wrapRouteCallback = (
 
             send: (data, options) => {
                 body = data;
-                status = options.status;
-                statusText = options.statusText;
+                status = options?.status;
+                statusText = options?.statusText;
             },
         };
 

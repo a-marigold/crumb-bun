@@ -2,7 +2,9 @@
     "compilerOptions": {
         "lib": ["ESNext"],
         "target": "esnext",
+
         "module": "esnext",
+
         "moduleDetection": "force",
 
         "allowJs": true,
@@ -11,11 +13,14 @@
 
         "moduleResolution": "bundler",
 
-        "allowImportingTsExtensions": true,
+        "allowImportingTsExtensions": false,
 
         "verbatimModuleSyntax": true,
-        "noEmit": true,
+        "noEmit": false,
+        // "emitDeclarationOnly": true,
         "declaration": true,
+
+        "outDir": "dist",
 
         // Best practices
         "strict": true,
@@ -28,5 +33,9 @@
         "noUnusedLocals": false,
         "noUnusedParameters": false,
         "noPropertyAccessFromIndexSignature": false
-    }
+    },
+
+    "include": ["src"],
+
+    "exclude": ["node_modules"]
 }
