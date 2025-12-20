@@ -1,6 +1,6 @@
 {
     "name": "crumb-bun",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "author": "marigold",
     "module": "dist/index.js",
     "license": "UNLICENSED",
@@ -16,6 +16,11 @@
     "files": [
         "dist"
     ],
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": "./dist/index.js"
+    },
     "peerDependencies": {
         "typescript": "^5"
     },

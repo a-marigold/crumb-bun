@@ -95,7 +95,7 @@ const prepareRoutes = (): PreparedRoutes => {
 
     return preparedRoutes;
 };
-export const listen = (port?: number, hostname?: string): void => {
+export const listen = (port?: number | string, hostname?: string): void => {
     serve({
         port,
 
