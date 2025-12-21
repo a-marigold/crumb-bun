@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect, test } from 'bun:test';
 
 import type { BunRequest } from 'bun';
 
@@ -8,8 +8,6 @@ import {
     prepareRoutes,
     listen,
 } from '../server';
-
-import type { WrappedRouteCallback } from '../server';
 
 describe('wrapRouteCallback', () => {
     it('should return a working wrapped callback', () => {
@@ -24,14 +22,39 @@ describe('wrapRouteCallback', () => {
             },
         });
 
-        const mockRequest = new Request('http://localhost:3000') as BunRequest;
+        const testRequest = new Request('http://localhost:3000') as BunRequest;
 
-        Promise.resolve(testWrappedCallback(mockRequest)).then((response) => {
-            const bodyPromise =
-                response.body?.json() || Promise.resolve(undefined);
+        testWrappedCallback(testRequest).then((response) => {
+            const bodyPromise = response.json();
+
             bodyPromise.then((data) => {
+                expect(response.headers.get('Content-Type')).toBe('text/plain');
                 expect(data).toBe(responseData);
             });
+        });
+    });
+});
+
+describe('prepareRoute', () => {
+    it('should return a working prepared route', () => {
+        const testPreparedRoute = prepareRoute({
+            POST: {
+                url: '/test/url',
+                method: 'POST',
+
+                handler: (request, response) => {
+                    return response.send({ key: 'value' });
+                },
+            },
+        });
+
+        expect(testPreparedRoute).toHaveProperty('POST');
+        expect(testPreparedRoute).not.toHaveProperty('GET');
+
+        const testRequest = new Request('http://localhost:3000') as BunRequest;
+
+        testPreparedRoute.POST?.(testRequest).then((response) => {
+            const bodyPromise = response.body?.json();
         });
     });
 });
