@@ -54,7 +54,7 @@ describe('prepareRoute', () => {
         const testRequest = new Request('http://localhost:3000') as BunRequest;
 
         testPreparedRoute.POST?.(testRequest).then((response) => {
-            const bodyPromise = response.body?.json();
+            const bodyPromise = response.json();
         });
     });
 });

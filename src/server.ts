@@ -40,8 +40,14 @@ const handleBody = (
                 })
                 .then((data) => data);
         },
+
         'text/plain': () => {
-            return request.text().then((data) => data);
+            return request
+                .text()
+                .catch((error) => {
+                    throw new HttpError(400, error);
+                })
+                .then((data) => data);
         },
     };
 
@@ -51,8 +57,7 @@ const handleBody = (
 };
 
 const handleRequest = (
-    request: BunRequest,
-    body: unknown,
+    request: RouteRequest,
     routeOptions: RouteOptions
 ): Response => {
     let status: number | undefined = undefined;
@@ -122,7 +127,12 @@ export const wrapRouteCallback = (
                 }
             })
             .then((body) => {
-                return handleRequest(request, body, routeOptions);
+                const routeRequest: RouteRequest = request;
+
+                // defineProperty is used to avoid non writable request.body
+                Object.defineProperty(routeRequest, 'body', { value: body });
+
+                return handleRequest(routeRequest, routeOptions);
             });
     };
 };
@@ -194,6 +204,7 @@ export const prepareRoutes = (): PreparedRoutes => {
 
     return preparedRoutes;
 };
+
 /**
  * Starts serving http server.
  *

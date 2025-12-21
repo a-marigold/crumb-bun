@@ -27,6 +27,7 @@ export type Header = {
 };
 export type Headers = ResponseInit['headers'];
 
+type a = Header;
 export interface RouteRequest<T extends { body: unknown } = { body: unknown }>
     extends Omit<BunRequest, 'body'> {
     body: T extends { body: unknown } ? T['body'] : unknown;
