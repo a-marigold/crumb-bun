@@ -64,7 +64,7 @@ const handleRequest = (
     let statusText: string | undefined = undefined;
 
     let responseBody: unknown = null;
-    let responseHeaders: Headers = {};
+    const responseHeaders: Headers = {};
 
     const routeRequest: RouteRequest = request;
     const routeResponse: RouteResponse = {
@@ -129,8 +129,11 @@ export const wrapRouteCallback = (
             .then((body) => {
                 const routeRequest: RouteRequest = request;
 
-                // defineProperty is used to avoid non writable request.body
-                Object.defineProperty(routeRequest, 'body', { value: body });
+                // Object.defineProperty is used to avoid non writable request.body
+                Object.defineProperty(routeRequest, 'body', {
+                    value: body,
+                    writable: false,
+                });
 
                 return handleRequest(routeRequest, routeOptions);
             });
