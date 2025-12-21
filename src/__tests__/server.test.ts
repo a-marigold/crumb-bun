@@ -37,13 +37,15 @@ describe('wrapRouteCallback', () => {
 
 describe('prepareRoute', () => {
     it('should return a working prepared route', () => {
+        const responseData = { key: 'value' };
+
         const testPreparedRoute = prepareRoute({
             POST: {
                 url: '/test/url',
                 method: 'POST',
 
                 handler: (request, response) => {
-                    return response.send({ key: 'value' });
+                    return response.send(responseData);
                 },
             },
         });
@@ -55,6 +57,17 @@ describe('prepareRoute', () => {
 
         testPreparedRoute.POST?.(testRequest).then((response) => {
             const bodyPromise = response.json();
+
+            bodyPromise.then((body) => {
+                expect(response.headers.get('Content-Type')).toBe(
+                    'application/json'
+                );
+                expect(body).toEqual(responseData);
+            });
         });
     });
+});
+
+describe('prepareRoutes', () => {
+    it('should mutate routes correctly', () => {});
 });

@@ -22,17 +22,19 @@ export type WrappedRouteCallback = (request: BunRequest) => Promise<Response>;
  */
 type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
 
+type Routes = Map<RouteOptions['url'], Route>;
+
 /**
- * An internal Map with routes of app. Do not use in user code to prevent undefined errors
+ * An internal Map with routes of app. Do not use it in user code to prevent undefined errors
  */
-export const _routes = new Map<RouteOptions['url'], Route>();
+export const _routes: Routes = new Map();
 
 const handleBody = (
     request: BunRequest,
     contentType: string
 ): Promise<unknown> => {
     const contentHandlers = {
-        'application/json': () => {
+        'application/json': (request: BunRequest) => {
             return request
                 .json()
                 .catch((error) => {
@@ -41,7 +43,7 @@ const handleBody = (
                 .then((data) => data);
         },
 
-        'text/plain': () => {
+        'text/plain': (request: BunRequest) => {
             return request
                 .text()
                 .catch((error) => {
@@ -52,7 +54,7 @@ const handleBody = (
     };
 
     return contentType in contentHandlers
-        ? contentHandlers[contentType as keyof typeof contentHandlers]()
+        ? contentHandlers[contentType as keyof typeof contentHandlers](request)
         : Promise.reject(new HttpError(415, 'Unsupported media type'));
 };
 
@@ -179,7 +181,7 @@ export const wrapRouteCallback = (
  *
  */
 export const prepareRoute = (route: Route): PreparedRoute => {
-    const preparedRoute: Partial<PreparedRoute> = {};
+    const preparedRoute: PreparedRoute = {};
 
     for (const routeMethod of Object.entries(route) as [
         HttpMethod,
@@ -198,10 +200,10 @@ export const prepareRoute = (route: Route): PreparedRoute => {
  *
  * @returns {PreparedRoutes} An object that is used straight in Bun.serve `routes` object.
  */
-export const prepareRoutes = (): PreparedRoutes => {
+export const prepareRoutes = (routes: Routes): PreparedRoutes => {
     const preparedRoutes: PreparedRoutes = {};
 
-    for (const route of _routes) {
+    for (const route of routes) {
         preparedRoutes[route[0]] = prepareRoute(route[1]);
     }
 
@@ -232,6 +234,7 @@ export const listen = (port?: number | string, hostname?: string): void => {
         port,
 
         hostname,
-        routes: prepareRoutes(),
+
+        routes: prepareRoutes(_routes),
     });
 };
