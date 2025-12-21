@@ -22,7 +22,7 @@ export type WrappedRouteCallback = (request: BunRequest) => Promise<Response>;
  */
 type PreparedRoutes = Record<RouteOptions['url'], PreparedRoute>;
 
-type Routes = Map<RouteOptions['url'], Route>;
+export type Routes = Map<RouteOptions['url'], Route>;
 
 /**
  * An internal Map with routes of app. Do not use it in user code to prevent undefined errors

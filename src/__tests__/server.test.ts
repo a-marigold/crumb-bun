@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'bun:test';
+import { describe, it, expect, test } from 'bun:test';
 
 import type { BunRequest } from 'bun';
 
@@ -8,11 +8,11 @@ import {
     prepareRoutes,
     listen,
 } from '../server';
+import type { Routes } from '../server';
 
 describe('wrapRouteCallback', () => {
     it('should return a working wrapped callback', () => {
         const responseData = 'Hello';
-
         const testWrappedCallback = wrapRouteCallback({
             url: '/test',
             method: 'GET',
@@ -69,5 +69,55 @@ describe('prepareRoute', () => {
 });
 
 describe('prepareRoutes', () => {
-    it('should mutate routes correctly', () => {});
+    it('should return correct prepared routes', () => {
+        const testRoutes: Routes = new Map([
+            [
+                '/test1',
+                {
+                    GET: {
+                        url: '/test1',
+                        method: 'GET',
+                        handler: (request, response) => {},
+                    },
+                    POST: {
+                        url: '/test1',
+                        method: 'POST',
+                        handler: (request, response) => {},
+                    },
+                },
+            ],
+
+            [
+                '/test2',
+                {
+                    PATCH: {
+                        url: '/test2',
+                        method: 'PATCH',
+                        handler: (request, response) => {},
+                    },
+                },
+            ],
+        ]);
+
+        const testPreparedRoutes = prepareRoutes(testRoutes);
+
+        expect(
+            '/test1' in testPreparedRoutes &&
+                'GET' in testPreparedRoutes['/test1'] &&
+                'POST' in testPreparedRoutes['/test1']
+        ).toBe(true);
+
+        expect(
+            '/test2' in testPreparedRoutes &&
+                'PATCH' in testPreparedRoutes['/test2']
+        ).toBe(true);
+
+        expect(
+            '/test2' in testPreparedRoutes &&
+                'GET' in testPreparedRoutes['/test2']
+        ).toBe(false);
+
+        expect(testPreparedRoutes['/test1']?.GET).toBeTypeOf('function');
+        expect(testPreparedRoutes['/test2']?.PATCH).toBeTypeOf('function');
+    });
 });
