@@ -13,6 +13,8 @@ import type {
     HttpMethod,
 } from './types/route';
 
+import type { ListenOptions } from './types/server';
+
 type PreparedRoute = Partial<Record<HttpMethod, WrappedRouteCallback>>;
 
 export type WrappedRouteCallback = (request: BunRequest) => Promise<Response>;
@@ -128,14 +130,9 @@ export const wrapRouteCallback = (
                     });
                 }
             })
-            .then((body) => {
-                const routeRequest: RouteRequest = request;
-
-                // Object.defineProperty is used to avoid non writable request.body
-                Object.defineProperty(routeRequest, 'body', {
-                    value: body,
-                    writable: false,
-                });
+            .then((bodyData) => {
+                const routeRequest: RouteRequest = Object.create(request);
+                routeRequest.body = bodyData;
 
                 return handleRequest(routeRequest, routeOptions);
             });
@@ -158,7 +155,7 @@ export const wrapRouteCallback = (
  *       method: 'GET',
  *       handler: (request, response) => {},
  *   },
- *   POST: {
+ *   POST: {`
  *     url: '/products/:id',
  *       method: 'POST',
  *       handler: (request, response) => {},
@@ -215,9 +212,8 @@ export const prepareRoutes = (routes: Routes): PreparedRoutes => {
 /**
  * Starts serving http server.
  *
- * @param {number | string} port port to listen. 3000 by default
- * @param {string} hostname hostname to listen. `0.0.0.0` by default
  *
+ * @param {ListenOption} options - options
  *
  *
  *
@@ -231,11 +227,11 @@ export const prepareRoutes = (routes: Routes): PreparedRoutes => {
  * listen(PORT, 'localhost');
  * ```
  */
-export const listen = (port?: number | string, hostname?: string): void => {
+export const listen = (options: ListenOptions): void => {
     serve({
-        port,
-
-        hostname,
+        port: options.port,
+        hostname: options.hostname,
+        development: options.development ?? false,
 
         routes: prepareRoutes(_routes),
     });
