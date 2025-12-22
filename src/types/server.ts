@@ -1,4 +1,4 @@
-import type { Validator } from './schema';
+import type { Validate } from './schema';
 
 export interface ListenOptions {
     /**
@@ -25,5 +25,5 @@ export interface ListenOptions {
     /**
      * Global schema validator function that will be used in every route
      */
-    schemaValidator?: Validator;
+    schemaValidator?: Validate;
 }

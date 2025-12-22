@@ -6,6 +6,7 @@
  * @example
  *
  * ```typescript
+ * // types/global.d.ts
  * import type { ZodType } from 'zod';
  *
  * declare module 'crumb-bun' {
@@ -14,13 +15,19 @@
  *    }
  * }
  * ```
+ * &nbsp;
+ * ```json
+ * // tsconfig.json
+ * {
+ *    "include": ["types"]
+ * }
+ * ```
  */
 export interface Schema {}
 
 /**
- * The global schema validator type.
+ * The schema validator function type.
+ *
  * Supports any schemas like `zod`, `ajv`, `yup`
  */
-export interface Validator {
-    validate: (data: unknown, schema: Schema) => void;
-}
+export type Validate = (data: unknown, schema: Schema) => boolean;

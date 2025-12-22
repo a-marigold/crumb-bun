@@ -13,6 +13,8 @@ import type {
     HttpMethod,
 } from './types/route';
 
+import type { Schema, Validate } from './types/schema';
+
 import type { ListenOptions } from './types/server';
 
 type PreparedRoute = Partial<Record<HttpMethod, WrappedRouteCallback>>;
@@ -33,7 +35,9 @@ export const _routes: Routes = new Map();
 
 const handleBody = (
     request: BunRequest,
-    contentType: string
+    contentType: string,
+    schema?: Schema,
+    schemaValidator?: Validate
 ): Promise<unknown> => {
     const contentHandlers = {
         'application/json': (request: BunRequest) => {
@@ -42,7 +46,19 @@ const handleBody = (
                 .catch((error) => {
                     throw new HttpError(400, error);
                 })
-                .then((data) => data);
+                .then((data) => {
+                    if (
+                        schema &&
+                        schemaValidator &&
+                        !schemaValidator(data, schema)
+                    ) {
+                        throw new HttpError(
+                            400,
+                            'Request does not match schema'
+                        );
+                    }
+                    return data;
+                });
         },
 
         'text/plain': (request: BunRequest) => {
@@ -51,7 +67,19 @@ const handleBody = (
                 .catch((error) => {
                     throw new HttpError(400, error);
                 })
-                .then((data) => data);
+                .then((data) => {
+                    if (
+                        schema &&
+                        schemaValidator &&
+                        !schemaValidator(data, schema)
+                    ) {
+                        throw new HttpError(
+                            400,
+                            'Request does not match schema'
+                        );
+                    }
+                    return data;
+                });
         },
     };
 
@@ -117,12 +145,13 @@ const handleRequest = (
  * @returns {WrappedRouteCallback} Function that is ready to be used in Bun.serve `routes`
  */
 export const wrapRouteCallback = (
-    routeOptions: RouteOptions
+    routeOptions: RouteOptions,
+    schemaValidator?: Validate
 ): WrappedRouteCallback => {
     return (request) => {
         const contentType = request.headers.get('Content-Type') ?? 'text/plain';
 
-        return handleBody(request, contentType)
+        return handleBody(request, contentType, '__SCHEMA__', schemaValidator)
             .catch((error) => {
                 if (error instanceof HttpError) {
                     return new Response(error.message, {
@@ -177,7 +206,10 @@ export const wrapRouteCallback = (
  * ```
  *
  */
-export const prepareRoute = (route: Route): PreparedRoute => {
+export const prepareRoute = (
+    route: Route,
+    schemaValidator?: Validate
+): PreparedRoute => {
     const preparedRoute: PreparedRoute = {};
 
     for (const routeMethod of Object.entries(route) as [
@@ -185,7 +217,10 @@ export const prepareRoute = (route: Route): PreparedRoute => {
 
         RouteOptions
     ][]) {
-        preparedRoute[routeMethod[0]] = wrapRouteCallback(routeMethod[1]);
+        preparedRoute[routeMethod[0]] = wrapRouteCallback(
+            routeMethod[1],
+            schemaValidator
+        );
     }
 
     return preparedRoute;
@@ -199,11 +234,13 @@ export const prepareRoute = (route: Route): PreparedRoute => {
  *
  * @returns {PreparedRoutes} An object that is used straight in Bun.serve `routes` object.
  */
-export const prepareRoutes = (routes: Routes): PreparedRoutes => {
+export const prepareRoutes = (
+    routes: Routes,
+    schemaValidator?: Validate
+): PreparedRoutes => {
     const preparedRoutes: PreparedRoutes = {};
-
     for (const route of routes) {
-        preparedRoutes[route[0]] = prepareRoute(route[1]);
+        preparedRoutes[route[0]] = prepareRoute(route[1], schemaValidator);
     }
 
     return preparedRoutes;
@@ -233,6 +270,6 @@ export const listen = (options: ListenOptions): void => {
         hostname: options.hostname,
         development: options.development ?? false,
 
-        routes: prepareRoutes(_routes),
+        routes: prepareRoutes(_routes, options?.schemaValidator),
     });
 };
