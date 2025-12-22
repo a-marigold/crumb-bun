@@ -151,7 +151,12 @@ export const wrapRouteCallback = (
     return (request) => {
         const contentType = request.headers.get('Content-Type') ?? 'text/plain';
 
-        return handleBody(request, contentType, '__SCHEMA__', schemaValidator)
+        return handleBody(
+            request,
+            contentType,
+            routeOptions.schema,
+            schemaValidator
+        )
             .catch((error) => {
                 if (error instanceof HttpError) {
                     return new Response(error.message, {
