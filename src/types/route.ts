@@ -28,6 +28,9 @@ export type Header = {
 };
 export type Headers = ResponseInit['headers'];
 
+/**
+ * Type of route handler `request`
+ */
 export interface RouteRequest<T extends { body: unknown } = { body: unknown }>
     extends Omit<BunRequest, 'body'> {
     body: T extends { body: unknown } ? T['body'] : unknown;
@@ -38,6 +41,9 @@ export interface ResponseOptions {
     statusText?: string;
 }
 
+/**
+ * Type of route handler `response`
+ */
 export interface RouteResponse<
     T extends { body: unknown } = { body: unknown }
 > {

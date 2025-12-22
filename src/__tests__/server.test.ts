@@ -208,6 +208,7 @@ describe('handleBody', () => {
             schemaValidator
         ).catch((error) => {
             expect(error).toBeInstanceOf(HttpError);
+
             expect(error).toHaveProperty('status', 400);
         });
     });
