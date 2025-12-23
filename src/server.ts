@@ -169,23 +169,24 @@ export const wrapRouteCallback = (
             routeOptions.schema,
             schemaValidator
         )
+            .then((bodyData) => {
+                const routeRequest: Partial<RouteRequest> = request;
+
+                routeRequest.parsedBody = bodyData;
+                return handleRequest(
+                    // assertion is not dangerous because `parsedBody` is identified above
+                    routeRequest as RouteRequest,
+                    routeOptions
+                );
+            })
             .catch((error) => {
                 if (error instanceof HttpError) {
                     return new Response(error.message, {
                         status: error.status,
                     });
                 }
-            })
-            .then((bodyData) => {
-                const routeRequest: Partial<RouteRequest> = request;
-
-                routeRequest.parsedBody = bodyData;
-
-                return handleRequest(
-                    // assertion is not dangerous because `parsedBody` is identified above
-                    routeRequest as RouteRequest,
-                    routeOptions
-                );
+                // error fallback
+                return new Response('Internal server error', { status: 500 });
             });
     };
 };

@@ -15,9 +15,11 @@ import type { Routes } from '../server';
 
 import type { Validate } from '../types/schema';
 
+import type { RouteRequest, RouteResponse } from '../types';
+
 describe('wrapRouteCallback', () => {
     it('should return a working wrapped callback', () => {
-        const responseData = 'Hello';
+        const responseData = { key: 'value' };
 
         const testWrappedCallback = wrapRouteCallback({
             url: '/test',
@@ -33,10 +35,101 @@ describe('wrapRouteCallback', () => {
         testWrappedCallback(testRequest).then((response) => {
             const bodyPromise = response.json();
 
-            bodyPromise.then((data) => {
-                expect(response.headers.get('Content-Type')).toBe('text/plain');
-                expect(data).toBe(responseData);
+            bodyPromise.then((bodyData) => {
+                expect(response.headers.get('Content-Type')).toBe(
+                    'application/json'
+                );
+                expect(bodyData).toEqual(responseData);
             });
+        });
+    });
+
+    it('should automatically set "application/json" as "Content-Type" header when an object sent', () => {
+        const jsonResponseData = { key: 'value' };
+        const jsonWrappedCallback = wrapRouteCallback({
+            url: '/test',
+            method: 'GET',
+            handler: (request, response) => {
+                response.send(jsonResponseData);
+            },
+        });
+
+        const testRequest = new Request('https://localhost:3000') as BunRequest;
+
+        jsonWrappedCallback(testRequest).then((response) => {
+            const bodyPromise = response.json();
+
+            bodyPromise.then((bodyData) => {
+                expect(bodyData).toEqual(jsonResponseData);
+                expect(response.headers.get('Content-Type')).toBe(
+                    'application/json'
+                );
+            });
+        });
+    });
+
+    it('should automatically set "text/plain" as "Content-Type" header when a string sent', () => {
+        const textResponesData = 'Hello';
+        const jsonWrappedCallback = wrapRouteCallback({
+            url: '/test',
+            method: 'GET',
+            handler: (request, response) => {
+                response.send(textResponesData);
+            },
+        });
+
+        const testRequest = new Request('https://localhost:3000') as BunRequest;
+
+        jsonWrappedCallback(testRequest).then((response) => {
+            const bodyPromise = response.json();
+
+            bodyPromise.then((bodyData) => {
+                expect(bodyData).toBe(textResponesData);
+                expect(response.headers.get('Content-Type')).toBe('text/plain');
+            });
+        });
+    });
+
+    it('should return a Response with error if request does not match schema', () => {
+        type TestBody = { price: number };
+
+        const testSchema = { price: 100 };
+        const schemaValidator: Validate = (data, schema: any) => {
+            return (
+                typeof data === 'object' &&
+                data !== null &&
+                'price' in data &&
+                typeof data.price === typeof schema.price
+            );
+        };
+
+        const testWrappedCallback = wrapRouteCallback(
+            {
+                url: '/products',
+                method: 'POST',
+                schema: testSchema,
+                handler: (
+                    request: RouteRequest<{ parsedBody: TestBody }>,
+                    response: RouteResponse<{ body: TestBody }>
+                ) => {
+                    return response.send({
+                        price: Number(request.parsedBody.price),
+                    });
+                },
+            },
+            schemaValidator
+        );
+
+        const testRequestData = { price: '100' };
+
+        const testRequest = new Request('http://localhost:3000', {
+            body: JSON.stringify(testRequestData),
+            headers: { 'Content-Type': 'application/json' },
+        }) as BunRequest;
+
+        testWrappedCallback(testRequest).then((response) => {
+            expect(response.status).toBe(400);
+            expect(response.ok).toBe(false);
         });
     });
 });
