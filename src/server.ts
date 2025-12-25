@@ -134,7 +134,9 @@ const handleRequest = (
     routeOptions.handler(routeRequest, routeResponse);
 
     return new Response(
-        responseBody === null ? null : JSON.stringify(responseBody),
+        responseBody === null || responseBody === undefined
+            ? null
+            : JSON.stringify(responseBody),
         {
             headers: responseHeaders,
             status,
@@ -173,6 +175,7 @@ export const wrapRouteCallback = (
                 const routeRequest: Partial<RouteRequest> = request;
 
                 routeRequest.parsedBody = bodyData;
+
                 return handleRequest(
                     // assertion is not dangerous because `parsedBody` is identified above
                     routeRequest as RouteRequest,

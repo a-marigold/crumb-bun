@@ -1,5 +1,7 @@
 import { createRoute, prepareRoutes, _routes } from 'crumb-bun';
 
+import { MB_MULTIPLIER } from './constants/MB_MULTIPLIER';
+
 const createRoutesLoopStart = performance.now();
 for (let i = 0; i < 1_000_000; i++) {
     createRoute({
@@ -33,6 +35,7 @@ console.log(
     }ms`
 );
 
+console.log(`Memory usage: ${process.memoryUsage().rss / MB_MULTIPLIER}mb`);
 console.log(`'_routes' length: `, _routes.size);
 
 const prepareRoutesStart = performance.now();
@@ -46,5 +49,7 @@ console.log(
         prepareRoutesEnd - prepareRoutesStart
     }ms`
 );
+
+console.log(`Memory usage: ${process.memoryUsage().rss / MB_MULTIPLIER}mb`);
 
 console.log(`'_routes' length: `, _routes.size);
