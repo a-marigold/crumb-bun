@@ -111,11 +111,11 @@ describe('wrapRouteCallback', () => {
                 method: 'POST',
                 schema: testSchema as unknown as undefined,
                 handler: (
-                    request: RouteRequest<{ parsedBody: TestBody }>,
+                    request: RouteRequest<{ body: TestBody }>,
                     response: RouteResponse<{ body: TestBody }>
                 ) => {
                     return response.send({
-                        price: Number(request.parsedBody.price),
+                        price: Number(request.handleBody().price),
                     });
                 },
             },
