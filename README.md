@@ -24,7 +24,7 @@ bun add bun-crumb
 Handling Requests
 
 ```typescript
-import { createRoute, type RouteResponse } from 'crumb-bun';
+import { createRoute, type RouteResponse } from 'bun-crumb';
 
 type Product = { title: string; price: number; id: number };
 
@@ -50,7 +50,7 @@ createRoute({
 Middleware / Pre-handlers
 
 ```typescript
-import { createRoute, type RouteResponse } from 'crumb-bun';
+import { createRoute, type RouteResponse } from 'bun-crumb';
 
 type Product = { title: string; price: number; id: number };
 
@@ -80,7 +80,7 @@ createRoute({
 Setting Headers and Status
 
 ```typescript
-import { createRoute } from 'crumb-bun';
+import { createRoute } from 'bun-crumb';
 
 createRoute({
     url: '/auth',
