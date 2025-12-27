@@ -1,4 +1,4 @@
-import { createRoute, prepareRoutes, _routes } from 'crumb-bun';
+import { createRoute, prepareRoutes, _routes } from 'bun-crumb';
 
 import { MB_MULTIPLIER } from './constants/MB_MULTIPLIER';
 

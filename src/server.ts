@@ -203,6 +203,7 @@ export const wrapRouteCallback = (
  * @returns {PreparedRoute} Route object with `GET` or other http method keys with wrapped route callbacks.
  *
  * @example
+ *
  * ```typescript
  * prepareRoute({
  *   GET: {
@@ -232,19 +233,21 @@ export const wrapRouteCallback = (
  */
 export const prepareRoute = (
     route: Route,
+
     schemaValidator?: Validate
 ): PreparedRoute => {
     const preparedRoute: PreparedRoute = {};
 
-    for (const routeMethod of Object.entries(route) as [
-        HttpMethod,
+    for (const method in route) {
+        if (Object.hasOwn(route, method)) {
+            // assertions below are not dangerous because method is own property and it is already in the route
 
-        RouteOptions
-    ][]) {
-        preparedRoute[routeMethod[0]] = wrapRouteCallback(
-            routeMethod[1],
-            schemaValidator
-        );
+            preparedRoute[method as HttpMethod] = wrapRouteCallback(
+                route[method as HttpMethod] as RouteOptions,
+
+                schemaValidator
+            );
+        }
     }
 
     return preparedRoute;

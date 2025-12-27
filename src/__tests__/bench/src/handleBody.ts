@@ -3,8 +3,8 @@ import type { BunRequest } from 'bun';
 import { record, object, string, number, boolean } from 'zod';
 import type { infer as zInfer } from 'zod';
 
-import { handleBody } from 'crumb-bun';
-import type { Validate } from 'crumb-bun';
+import { handleBody } from 'bun-crumb';
+import type { Validate } from 'bun-crumb';
 
 import { MB_MULTIPLIER } from './constants/MB_MULTIPLIER';
 
@@ -39,7 +39,7 @@ const testRequest = new Request('http://localhost:3000', {
 }) as BunRequest;
 
 const schemaValidator: Validate = (data, schema) => {
-    return schema.zod.safeParse(data).success;
+    return schema.safeParse(data).success;
 };
 
 const handleBodyStart = performance.now();
