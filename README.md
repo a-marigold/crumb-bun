@@ -1,7 +1,9 @@
 # <div align='center'> <a> **Bun Crumb** </a> </div>
 
-<div align='center'>  
- [![CI](https://github.com/a-marigold/crumb/actions/workflows/ci.yaml/badge.svg)](https://github.com/a-marigold/crumb/actions) [![bun](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff)](https://bun.com) [![npm](https://img.shields.io/npm/v/bun-crumb)](https://npmjs.com/package/bun-crumb) [![Status](https://img.shields.io/badge/BETA-darkgreen?style=for-the-badge)](https://npmjs.com/package/bun-crumb)
+<div align='center'>
+
+[![CI](https://github.com/a-marigold/crumb/actions/workflows/ci.yaml/badge.svg)](https://github.com/a-marigold/crumb/actions) [![Status](https://img.shields.io/badge/BETA-darkgreen?style=for-the-badge)](https://npmjs.com/package/bun-crumb)
+[![bun](https://img.shields.io/badge/Bun-000?logo=bun&logoColor=fff)](https://bun.com) [![npm](https://img.shields.io/npm/v/bun-crumb)](https://npmjs.com/package/bun-crumb)
 
 </div>
 
