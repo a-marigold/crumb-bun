@@ -1,6 +1,6 @@
 import type { ZodType } from 'zod';
 
-declare module 'crumb-bun' {
+declare module 'bun-crumb' {
     interface Schema {
         zod: ZodType;
     }

@@ -165,23 +165,25 @@ export const wrapRouteCallback = (
     return (request) => {
         const contentType = request.headers.get('Content-Type') ?? 'text/plain';
 
-        return handleBody(
-            request,
-            contentType,
-            routeOptions.schema,
-            schemaValidator
+        const routeRequest: Partial<RouteRequest> = request;
+
+        routeRequest.handleBody = () => {
+            return handleBody(
+                request,
+                contentType,
+                routeOptions.schema,
+                schemaValidator
+            ).then((bodyData) => bodyData);
+        };
+
+        return Promise.resolve(
+            handleRequest(
+                // assertion is not dangerous because `handleBody` function is identified above
+                routeRequest as RouteRequest,
+                routeOptions
+            )
         )
-            .then((bodyData) => {
-                const routeRequest: Partial<RouteRequest> = request;
-
-                routeRequest.parsedBody = bodyData;
-
-                return handleRequest(
-                    // assertion is not dangerous because `parsedBody` is identified above
-                    routeRequest as RouteRequest,
-                    routeOptions
-                );
-            })
+            .then((response) => response)
             .catch((error) => {
                 if (error instanceof HttpError) {
                     return new Response(error.message, {

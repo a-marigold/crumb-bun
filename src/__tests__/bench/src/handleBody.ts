@@ -46,7 +46,8 @@ const handleBodyStart = performance.now();
 handleBody(
     testRequest,
     'application/json',
-    { zod: requestDataSchema },
+
+    requestDataSchema,
     schemaValidator
 );
 const handleBodyEnd = performance.now();
