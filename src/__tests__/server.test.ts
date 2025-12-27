@@ -1,12 +1,12 @@
 import { describe, it, expect } from 'bun:test';
 
-import type { BunRequest } from 'bun';
+import type { BunRequest, password } from 'bun';
 
 import { HttpError } from '../errors/HttpError';
 
 import { handleBody, wrapRouteCallback } from '../server';
 
-import type { Validate } from '../types/schema';
+import type { Validate } from '../types';
 
 import type { RouteRequest, RouteResponse } from '../types';
 
@@ -15,6 +15,7 @@ describe('wrapRouteCallback', () => {
         const responseData = { key: 'value' };
         const testWrappedCallback = wrapRouteCallback({
             url: '/test',
+
             method: 'GET',
 
             handler: (_request, response) => {
@@ -33,6 +34,53 @@ describe('wrapRouteCallback', () => {
                 );
 
                 expect(bodyData).toEqual(responseData);
+            });
+        });
+    });
+
+    it('should catch async errors from "request.handleBody" function', () => {
+        type RequestData = { password: string };
+
+        const schemaValidator: Validate = (data, schema) => {
+            return (
+                typeof data === 'object' &&
+                data !== null &&
+                'password' in data &&
+                typeof data.password === (schema as RequestData).password
+            );
+        };
+
+        const schema = { password: 'string' } as unknown as undefined;
+
+        const wrappedCallback = wrapRouteCallback(
+            {
+                url: '/test',
+                method: 'POST',
+                schema,
+                handler: async (
+                    request: RouteRequest<{ body: RequestData }>,
+                    response
+                ) => {
+                    const body = await request.handleBody();
+
+                    response.send('Success');
+                },
+            },
+            schemaValidator
+        );
+
+        const testRequestData = { password: 123 };
+
+        const testRequest = new Request('http://localhost:3000', {
+            body: JSON.stringify(testRequestData),
+            headers: { 'Content-Type': 'application/json' },
+        }) as BunRequest;
+
+        wrappedCallback(testRequest).then((response) => {
+            expect(response.ok).toBe(false);
+
+            response.text().then((bodyData) => {
+                expect(bodyData).toBe('Request does not match schema');
             });
         });
     });
