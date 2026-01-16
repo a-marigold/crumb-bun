@@ -3,6 +3,7 @@ import { serve, Cookie } from 'bun';
 import type { BunRequest } from 'bun';
 
 import type { BodyInit } from 'bun';
+
 import { HttpError } from './errors/HttpError';
 
 import type {
@@ -10,7 +11,6 @@ import type {
     RouteOptions,
     RouteRequest,
     RouteResponse,
-    Headers,
     HttpMethod,
 } from './types';
 import type { SchemaData, Validate } from './types';
@@ -199,6 +199,10 @@ export const wrapRouteCallback = (
                 schemaValidator
             );
         };
+
+        routeRequest.query = new URLSearchParams(
+            request.url.split('?')[1] || ''
+        );
 
         return Promise.resolve(
             handleRequest(

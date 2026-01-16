@@ -34,5 +34,3 @@ export type Header = {
     name: string;
     value: string;
 };
-
-export type Headers = ResponseInit['headers'];
