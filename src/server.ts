@@ -140,7 +140,7 @@ const handleRequest = (
         },
         redirect: (url, redirectStatus) => {
             responseBody = '';
-            status = redirectStatus;
+            status = redirectStatus || 302;
             responseHeaders['location'] = url;
         },
     };

@@ -155,6 +155,7 @@ describe('wrapRouteCallback', () => {
                     method: 'POST',
 
                     schema: testSchema as unknown as undefined,
+
                     handler: (
                         request: RouteRequest<{ body: TestBody }>,
 
@@ -194,7 +195,9 @@ describe('wrapRouteCallback', () => {
 
             const wrappedCallback = wrapRouteCallback({
                 url: '/test',
+
                 method: 'GET',
+
                 handler: (
                     _request,
                     response: RouteResponse<{ body: string }>
@@ -218,6 +221,27 @@ describe('wrapRouteCallback', () => {
                 bodyPromise.then((bodyData) => {
                     expect(bodyData).toBe(userBodyData);
                 });
+            });
+        });
+    });
+
+    describe('redirect', () => {
+        it('should automatically set `response.status` to 302', () => {
+            const redirectLocation = 'https://bun-crumb.vercel.app';
+
+            const wrappedCallback = wrapRouteCallback({
+                url: '/test',
+                method: 'GET',
+                handler: (_request, response) => {
+                    return response.redirect(redirectLocation);
+                },
+            });
+
+            const request = new Request('http://localhost:3000') as BunRequest;
+            wrappedCallback(request).then((response) => {
+                expect(response.headers.get('locaTioN')).toBe(redirectLocation);
+
+                expect(response.status).toBe(302);
             });
         });
     });
