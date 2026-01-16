@@ -70,7 +70,6 @@ console.log('');
     const createDiff = creationEnd - creationStart;
     const setLoopDiff = setLoopEnd - setLoopStart;
     const getLoopDiff = getLoopEnd - getLoopStart;
-    const initLoopDiff = initializationEnd - initializationStart;
     const resDiff = resIntializationEnd - resInitializationStart;
 
     console.log('init');

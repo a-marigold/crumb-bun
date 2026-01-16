@@ -1,4 +1,5 @@
-import { createRoute, prepareRoutes, _routes } from 'bun-crumb';
+import { createRoute } from '../../route';
+import { prepareRoutes, _routes } from '../../server';
 
 import { MB_MULTIPLIER } from './constants/MB_MULTIPLIER';
 
@@ -11,22 +12,21 @@ for (let i = 0; i <= 1_000_000; i++) {
     createRoute({
         url: `/test${i}`,
         method: 'POST',
-        preHandler: (_reqeust, _response) => {},
 
         handler: (_request, _response) => {},
     });
     createRoute({
         url: `/test${i}`,
+
         method: 'GET',
 
-        preHandler: (_request, _response) => {},
-
         handler: (_request, _response) => {},
     });
     createRoute({
         url: `/test${i}`,
+
         method: 'DELETE',
-        preHandler: (_request, _response) => {},
+
         handler: (_request, _response) => {},
     });
 }

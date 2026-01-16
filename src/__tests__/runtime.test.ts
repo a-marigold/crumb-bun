@@ -2,7 +2,6 @@ import { describe, it, expect } from 'bun:test';
 
 import type { BunRequest } from 'bun';
 
-import { HttpError } from '../errors/HttpError';
 import type { RouteRequest, RouteResponse, Validate } from '../types';
 import { wrapRouteCallback } from '../server';
 

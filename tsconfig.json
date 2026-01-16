@@ -17,7 +17,6 @@
 
         "verbatimModuleSyntax": true,
         "noEmit": false,
-        // "emitDeclarationOnly": true,
         "declaration": true,
 
         "outDir": "dist",
@@ -30,8 +29,8 @@
         "noImplicitOverride": true,
 
         // Some stricter flags (disabled by default)
-        "noUnusedLocals": false,
-        "noUnusedParameters": false,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
         "noPropertyAccessFromIndexSignature": false
     },
 

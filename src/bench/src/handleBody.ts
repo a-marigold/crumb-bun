@@ -3,7 +3,7 @@ import type { BunRequest } from 'bun';
 import { record, object, string, number, boolean } from 'zod';
 import type { infer as zInfer } from 'zod';
 
-import { handleBody } from 'bun-crumb';
+import { handleBody } from '../../server';
 import type { Validate } from 'bun-crumb';
 
 import { MB_MULTIPLIER } from './constants/MB_MULTIPLIER';
@@ -47,7 +47,7 @@ handleBody(
     testRequest,
     'application/json',
 
-    requestDataSchema,
+    requestDataSchema as unknown as undefined,
     schemaValidator
 );
 const handleBodyEnd = performance.now();
@@ -55,4 +55,5 @@ const handleBodyEnd = performance.now();
 console.log(
     `'handleBody' function called in ${handleBodyEnd - handleBodyStart}ms`
 );
+
 console.log(`Memory usage: ${process.memoryUsage().rss / MB_MULTIPLIER}mb`);

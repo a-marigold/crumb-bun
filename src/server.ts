@@ -1,4 +1,4 @@
-import { serve, Cookie } from 'bun';
+import { serve, Cookie, stdout } from 'bun';
 
 import type { BunRequest } from 'bun';
 
@@ -327,13 +327,14 @@ export const prepareRoutes = (
  * ```
  */
 export const listen = (options?: ListenOptions): void => {
-    serve({
+    const server = serve({
         port: options?.port,
-
         hostname: options?.hostname,
 
         development: options?.development ?? false,
 
         routes: prepareRoutes(_routes, options?.schemaValidator),
     });
+
+    stdout.write('Server is running on ' + server.url.href + '\n');
 };

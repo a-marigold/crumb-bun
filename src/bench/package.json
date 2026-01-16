@@ -1,15 +1,21 @@
 {
     "name": "benchmarks",
+    "version": "0.0.0",
     "private": true,
     "devDependencies": {
-        "@types/bun": "latest"
+        "@types/bun": "latest",
+        "@types/k6": "^1.5.0"
     },
     "peerDependencies": {
         "typescript": "^5"
     },
+    "scripts": {},
     "dependencies": {
-        "bun-crumb": "^0.3.0",
+        "bun-crumb": "^0.11.0",
         "fastify": "^5.6.2",
         "zod": "^4.2.1"
+    },
+    "author": {
+        "name": "m"
     }
 }
